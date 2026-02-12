@@ -13,19 +13,10 @@
     <thead>
         <tr>
             <th>
+                Portada
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Titulo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaLanzamiento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MinutosDuracion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sinopsis)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PosterUrlPortada)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Plataforma)
@@ -38,22 +29,14 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr> 
+            <td>
+                <img src="@item.PosterUrlPortada" height="50"/>
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Titulo)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaLanzamiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MinutosDuracion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sinopsis)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PosterUrlPortada)
-            </td>
+ 
             <td>
                 @Html.DisplayFor(modelItem => item.Plataforma.Nombre)
             </td>
