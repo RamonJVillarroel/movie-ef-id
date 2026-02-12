@@ -4,12 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Lista de peliculas</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Crear Pelicula</a>
 </p>
-<table class="table">
+<table id="peliculasTable" class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -52,3 +52,25 @@
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#peliculasTable').DataTable({
+                // configuración básica - puedes ajustar según necesites
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "pageLength": 5,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 0 }, // Imagen no ordenable
+                    { "orderable": false, "targets": 4 }  // Acciones no ordenables
+                ],
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                }
+            });
+        });
+    </script>
+}
