@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using movie_ef_mvc.Data;
 using movie_ef_mvc.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace movie_ef_mvc.Controllers
 {
@@ -76,7 +77,23 @@ namespace movie_ef_mvc.Controllers
             );
             return View(peliculas);
         }
+        public async Task<IActionResult> Details(int Id)
+        {
+            var pelicula = await _context.Peliculas
+                .Include(p => p.Genero)
+                //.Include(p => p.ListaReviews)
+                //.ThenInclude(r => r.Usuario)
+                .FirstOrDefaultAsync(p => p.Id == Id);
 
+            ViewBag.UserReview = false;
+            /*if (User?.Identity?.IsAuthenticated == true && pelicula.ListaReviews != null)
+            {
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                ViewBag.UserReview = !(pelicula.ListaReviews.FirstOrDefault(r => r.UsuarioId == userId) == null);
+            }*/
+
+            return View(pelicula);
+        }
         public IActionResult Privacy()
         {
             return View();
