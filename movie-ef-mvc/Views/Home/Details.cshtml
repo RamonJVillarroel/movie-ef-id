@@ -1,6 +1,6 @@
-﻿@*@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Usuario> SignInManager
-@inject UserManager<Usuario> UserManager*@
+@inject UserManager<Usuario> UserManager
 @model Pelicula
 @{
     ViewData["Title"] = "Detalles de la Película";
@@ -104,7 +104,7 @@
             <div class="mt-5">
                 <h2 class="h3 fw-bold mb-4">Reviews</h2>
                 <div class="list-group">
-                    @*foreach (var item in Model.ListaReviews)
+                    @foreach (var item in Model.ListaReviews)
                     {
                         <div class="list-group-item bg-dark text-light border-secondary review-card p-4 mb-3">
                             <div class="d-flex align-items-center mb-3">
@@ -117,9 +117,9 @@
                                 </div>
                             </div>
                             <div class="mb-2">
-                               @* @for (int i = 1; i <= 5; i++)
+                                @for (int i = 1; i <= 5; i++)
                                 {
-                                    if (i <= item.Rating)
+                                    if (i <= item.Raiting)
                                     {
                                         <span class="material-symbols-outlined star-filled">star</span>
                                     }
@@ -129,9 +129,9 @@
                                     }
                                 }
                             </div>
-                            <p class="mb-3">@item.Comentario</p>*@
+                            <p class="mb-3">@item.Comentario</p>
 
-                            @*if (SignInManager.IsSignedIn(User))
+                            @if (SignInManager.IsSignedIn(User))
                             {
                                 @if (UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin").Result)
                                 {
@@ -139,7 +139,7 @@
                                         <span class="material-symbols-outlined">edit</span> Editar
                                     </a>
                                 }
-                            }*@
+                            }
                         </div>
                     }
                 </div>
@@ -147,7 +147,6 @@
         </div>
     </div>
 </main>
-@*
 @{
     var reviewViewModel = new ReviewCreateViewModel
     {

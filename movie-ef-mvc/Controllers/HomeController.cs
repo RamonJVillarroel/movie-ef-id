@@ -81,8 +81,8 @@ namespace movie_ef_mvc.Controllers
         {
             var pelicula = await _context.Peliculas
                 .Include(p => p.Genero)
-                //.Include(p => p.ListaReviews)
-                //.ThenInclude(r => r.Usuario)
+                .Include(p => p.ListaReviews)
+                .ThenInclude(r => r.Usuario)
                 .FirstOrDefaultAsync(p => p.Id == Id);
 
             ViewBag.UserReview = false;
