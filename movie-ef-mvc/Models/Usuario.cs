@@ -60,6 +60,8 @@ namespace movie_ef_mvc.Models
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string? Email { get; set; }
+        //esta propiedad es para permitir que el usuario suba una nueva imagen de perfil,
+        //y la propiedad ImagenUrlPerfil es para mostrar la imagen actual del usuario en su perfil.
         public IFormFile? ImagenPerfil { get; set; }
         public string? ImagenUrlPerfil { get; set; }
     }

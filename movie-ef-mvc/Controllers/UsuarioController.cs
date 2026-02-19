@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using movie_ef_mvc.Models;
+using movie_ef_mvc.Services;
 
 namespace movie_ef_mvc.Controllers
 {
@@ -10,14 +12,14 @@ namespace movie_ef_mvc.Controllers
         // que son servicios proporcionados por ASP.NET Core Identity para gestionar usuarios y autenticación.
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
-        //private readonly ImagenStorage _imagenStorage;
-       // private readonly IEmailService _emailService;
-        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager /*ImagenStorage imagenStorage, IEmailService emailService*/)
+        private readonly ImagenStorage _imagenStorage;
+        //private readonly IEmailService _emailService;
+        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager ,ImagenStorage imagenStorage/*, IEmailService emailService*/)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            //_imagenStorage = imagenStorage;
-           // _emailService = emailService;
+            _imagenStorage = imagenStorage;
+            //_emailService = emailService;
         }
 
         public IActionResult Login()
@@ -84,6 +86,88 @@ namespace movie_ef_mvc.Controllers
 
             }
             return View(usuario);
+        }
+
+        public IActionResult Logout()
+        {
+            _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MiPerfil()
+        {
+            //esto es para obtener el usuario actual que ha iniciado sesión, utilizando el UserManager de ASP.NET Core Identity.
+            //entonces se crea un objeto MiPerfilViewModel con la información del usuario actual (nombre, apellido, email e imagen de perfil) y
+            //se pasa a la vista para mostrar el perfil del usuario.
+            //no viene porque identity no tiene un método directo para obtener el usuario actual, sino que se obtiene a través del contexto de usuario (User) y luego se consulta la base de datos para obtener los detalles completos del usuario.
+            var usuarioActual = await _userManager.GetUserAsync(User); 
+            var usuarioVM = new MiPerfilViewModel
+            {
+                Nombre = usuarioActual.Nombre,
+                Apellido = usuarioActual.Apellido,
+                Email = usuarioActual.Email,
+                ImagenUrlPerfil = usuarioActual.ImagenUrlPerfil
+            };
+
+            return View(usuarioVM);
+        }
+        
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MiPerfil(MiPerfilViewModel usuarioVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var usuarioActual = await _userManager.GetUserAsync(User);
+
+                try
+                {
+                    if (usuarioVM.ImagenPerfil is not null && usuarioVM.ImagenPerfil.Length > 0)
+                    {
+                        // opcional: borrar la anterior (si no es placeholder)
+                        if (!string.IsNullOrWhiteSpace(usuarioActual.ImagenUrlPerfil))
+                            await _imagenStorage.DeleteAsync(usuarioActual.ImagenUrlPerfil);
+
+                        var nuevaRuta = await _imagenStorage.SaveAsync(usuarioActual.Id, usuarioVM.ImagenPerfil);
+                        usuarioActual.ImagenUrlPerfil = nuevaRuta;
+                        usuarioVM.ImagenUrlPerfil = nuevaRuta;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(usuarioVM);
+                }
+                // actualizar el nombre y apellido del usuario
+                usuarioActual.Nombre = usuarioVM.Nombre;
+                usuarioActual.Apellido = usuarioVM.Apellido;
+                //agregado para updatesolo de usuario nombre y apellido
+                //usuarioVM.ImagenUrlPerfil = usuarioActual.ImagenUrlPerfil;
+                // actualizar el usuario utilizando UserManager y verificar si la actualización fue exitosa. Si es así,
+                // se muestra un mensaje de éxito en la vista; de lo contrario, se agregan los errores al ModelState para mostrarlos en la vista.
+                var resultado = await _userManager.UpdateAsync(usuarioActual);
+
+                if (resultado.Succeeded)
+                {
+                    ViewBag.Mensaje = "Perfil actualizado con éxito.";
+                    return View(usuarioVM);
+                }
+                else
+                {
+                    foreach (var error in resultado.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return View(usuarioVM);
         }
 
     }

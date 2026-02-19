@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using movie_ef_mvc.Data;
 using movie_ef_mvc.Models;
+using movie_ef_mvc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,10 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.LoginPath = "/Usuario/Login";
     o.AccessDeniedPath = "/Usuario/AccessDenied";
 });
+
+//Servicios de archivos
+builder.Services.AddScoped<ImagenStorage>();
+builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 1024 * 1024; });
 
 var app = builder.Build();
 // invocar la ejecucion del dbseader con using scope 
