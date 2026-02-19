@@ -19,9 +19,15 @@ namespace movie_ef_mvc.Controllers
             _context = context;
         }
         // GET: ReviewController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()//Mis Reviews
         {
-            return View();
+            var userId = _userManager.GetUserId(User);
+            var reviews = await _context.Reviews
+                .Include(r => r.Pelicula)
+                .Where(r => r.UsuarioId == userId)
+                .ToListAsync();
+
+            return View(reviews);
         }
 
         // GET: ReviewController/Details/5
@@ -81,23 +87,63 @@ namespace movie_ef_mvc.Controllers
         }
 
         // GET: ReviewController/Edit/5
-        public ActionResult Edit(int id)
+        [Authorize]
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+
+            var review = _context.Reviews
+                .Include(r => r.Pelicula)
+                .FirstOrDefault(r => r.Id == id);
+            if (review == null)
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (review.UsuarioId != user.Id && !_userManager.IsInRoleAsync(user, "Admin").Result)
+                return Forbid();
+
+            var reviewViewModel = new ReviewCreateViewModel
+            {
+                Id = review.Id,
+                PeliculaId = review.PeliculaId,
+                UsuarioId = review.UsuarioId,
+                Rating = review.Raiting,
+                Comentario = review.Comentario,
+                PeliculaTitulo = review.Pelicula?.Titulo
+            };
+
+            return View(reviewViewModel);
         }
 
         // POST: ReviewController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(ReviewCreateViewModel review)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var reviewExistente = _context.Reviews.FirstOrDefault(r => r.Id == review.Id);
+                    if (reviewExistente == null)
+                        return NotFound();
+
+                    var user = await _userManager.GetUserAsync(User);
+                    if (review.UsuarioId != user.Id && !_userManager.IsInRoleAsync(user, "Admin").Result)
+                        return Forbid();
+
+                    reviewExistente.Raiting = review.Rating;
+                    reviewExistente.Comentario = review.Comentario;
+                    _context.Reviews.Update(reviewExistente);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index", "Review");
+                }
+
+
+                return View(review);
             }
             catch
             {
-                return View();
+                return View(review);
             }
         }
 

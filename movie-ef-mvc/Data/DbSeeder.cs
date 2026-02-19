@@ -1,16 +1,16 @@
-﻿//using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using movie_ef_mvc.Models;
 
 namespace movie_ef_mvc.Data
 {
     public class DbSeeder
     {
-        public static async Task Seed(MovieDbContext context)
+        public static async Task Seed(MovieDbContext context, UserManager<Usuario> userManager, RoleManager<IdentityRole> roleManager)
         {
             context.Database.EnsureCreated();
 
 
-           /* // Crear rol Admin si no existe
+            // Crear rol Admin si no existe
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
@@ -34,7 +34,7 @@ namespace movie_ef_mvc.Data
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
-            }*/
+            }
 
 
 
