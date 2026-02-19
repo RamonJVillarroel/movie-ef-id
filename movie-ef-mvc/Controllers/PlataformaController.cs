@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using movie_ef_mvc.Data;
 using movie_ef_mvc.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace movie_ef_mvc.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PlataformaController : Controller
     {
         private readonly MovieDbContext _context;
