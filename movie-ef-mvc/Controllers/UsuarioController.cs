@@ -19,9 +19,29 @@ namespace movie_ef_mvc.Controllers
             //_imagenStorage = imagenStorage;
            // _emailService = emailService;
         }
-        public IActionResult Index()
+
+        public IActionResult Login()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel usuario)
+        {
+            if (ModelState.IsValid)
+            {
+                var resultado = await _signInManager.PasswordSignInAsync(usuario.Email, usuario.Clave, usuario.Recordarme, lockoutOnFailure: false);
+                if (resultado.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
+                }
+            }
+            return View(usuario);
         }
 
         public IActionResult Registro()
