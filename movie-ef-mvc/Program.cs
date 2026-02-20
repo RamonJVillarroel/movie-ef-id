@@ -45,6 +45,12 @@ builder.Services.ConfigureApplicationCookie(o =>
 builder.Services.AddScoped<ImagenStorage>();
 builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 1024 * 1024; });
 
+//Servicios de email
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+
+
+
 var app = builder.Build();
 // invocar la ejecucion del dbseader con using scope 
 using (var scope = app.Services.CreateScope())

@@ -13,13 +13,14 @@ namespace movie_ef_mvc.Controllers
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
         private readonly ImagenStorage _imagenStorage;
-        //private readonly IEmailService _emailService;
-        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager ,ImagenStorage imagenStorage/*, IEmailService emailService*/)
+        //implementacion del servicio de correo electrónico para enviar correos electrónicos a los usuarios, como mensajes de bienvenida después de registrarse.
+        private readonly IEmailService _emailService;
+        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager ,ImagenStorage imagenStorage, IEmailService emailService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _imagenStorage = imagenStorage;
-            //_emailService = emailService;
+            _emailService = emailService;
         }
 
         public IActionResult Login()
@@ -72,7 +73,9 @@ namespace movie_ef_mvc.Controllers
                 {
                     //si el resultado es correcto , se inicia sesión automáticamente al nuevo usuario utilizando SignInManager y se redirige a la página de inicio.
                     await _signInManager.SignInAsync(nuevoUsuario, isPersistent: false);
-                    //await _emailService.SendAsync(nuevoUsuario.Email, "Bienvenido a Movie mvc", "<h1>Gracias por registrarte en Movie mvc!</h1><p>Esperamos que disfrutes de nuestra plataforma.</p>");
+                    //implementacion del servicio de correo electrónico
+                    //para enviar un mensaje de bienvenida al nuevo usuario después de registrarse exitosamente.
+                    await _emailService.SendAsync(nuevoUsuario.Email, "Bienvenido a Movie mvc", "<h1>Gracias por registrarte en Movie mvc!</h1><p>Esperamos que disfrutes de nuestra plataforma.</p>");
                     return RedirectToAction("Index", "Home");
                 }
                 else
