@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using movie_ef_mvc.Data;
 using movie_ef_mvc.Models;
+using movie_ef_mvc.Services;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -13,17 +14,13 @@ namespace movie_ef_mvc.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly MovieDbContext _context;
         private const int PageSize = 8;
-        public HomeController(ILogger<HomeController> logger, MovieDbContext context)
+        private readonly LlmService _llmService;
+        public HomeController(ILogger<HomeController> logger, MovieDbContext context, LlmService llmService)
         {
             _logger = logger;
             _context = context;
+            _llmService = llmService;
         }
-
-        /* public async Task<IActionResult> Index()
-         {
-             var peliculas = await _context.Peliculas.ToListAsync();
-             return View(peliculas);
-         }*/
         public async Task<IActionResult> Index(int pagina = 1, string txtBusqueda = "", int generoId = 0, int plataformaId= 0)
         {
             if (pagina < 1) pagina = 1;
@@ -94,15 +91,41 @@ namespace movie_ef_mvc.Controllers
 
             return View(pelicula);
         }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Spoiler(string titulo)
+        {
+            try
+            {
+                var spoiler = await _llmService.ObtenerSpoilerAsync(titulo);
+                return Json(new { success = true, data = spoiler });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Resumen(string titulo)
+        {
+            try
+            {
+                var resumen = await _llmService.ObtenerResumenAsync(titulo);
+                return Json(new { success = true, data = resumen });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

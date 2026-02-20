@@ -50,6 +50,10 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 
+//Servicio LLM
+builder.Services.AddScoped<LlmService>();
+
+
 
 var app = builder.Build();
 // invocar la ejecucion del dbseader con using scope 

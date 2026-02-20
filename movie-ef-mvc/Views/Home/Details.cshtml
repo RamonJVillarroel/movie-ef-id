@@ -158,7 +158,7 @@
 <partial name="~/Views/Review/_CreateReview.cshtml" model="reviewViewModel" />
 
 @* Modal LLM *@
-@*{
+@{
     var llmViewModel = new ModalLlmViewModel
     {
         Tipo = "",
@@ -170,7 +170,6 @@
 
 <partial name="~/Views/Home/_ModalLlm.cshtml" model="llmViewModel" />
 
-*@
 
 <style>
     .star-filled {
@@ -182,7 +181,7 @@
     }
 </style>
 
-@*section Scripts {
+section Scripts {
     <script>
         function cargarLlm(tipo, titulo) {
             // Mostrar el modal
@@ -225,4 +224,4 @@
                 });
         }
     </script>
-}*@
+}
