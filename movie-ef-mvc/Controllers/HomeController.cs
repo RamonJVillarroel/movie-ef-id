@@ -15,11 +15,13 @@ namespace movie_ef_mvc.Controllers
         private readonly MovieDbContext _context;
         private const int PageSize = 8;
         private readonly LlmService _llmService;
-        public HomeController(ILogger<HomeController> logger, MovieDbContext context, LlmService llmService)
+        //private readonly OllamaLlmServices _ollamaLlmService;
+        public HomeController(ILogger<HomeController> logger, MovieDbContext context, LlmService llmService/* OllamaLlmServices ollamaLlmService*/)
         {
             _logger = logger;
             _context = context;
             _llmService = llmService;
+            //_ollamaLlmService = ollamaLlmService;
         }
         public async Task<IActionResult> Index(int pagina = 1, string txtBusqueda = "", int generoId = 0, int plataformaId= 0)
         {
@@ -104,7 +106,8 @@ namespace movie_ef_mvc.Controllers
         {
             try
             {
-                var spoiler = await _llmService.ObtenerSpoilerAsync(titulo);
+                 var spoiler = await _llmService.ObtenerSpoilerAsync(titulo);
+                //var spoiler = await _ollamaLlmService.ObtenerSpoilerAsync(titulo);
                 return Json(new { success = true, data = spoiler });
 
             }
@@ -120,6 +123,7 @@ namespace movie_ef_mvc.Controllers
             try
             {
                 var resumen = await _llmService.ObtenerResumenAsync(titulo);
+                //var resumen = await _ollamaLlmService.ObtenerResumenAsync(titulo);
                 return Json(new { success = true, data = resumen });
             }
             catch (Exception ex)

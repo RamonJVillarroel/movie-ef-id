@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using movie_ef_mvc.Data;
 using movie_ef_mvc.Models;
 using movie_ef_mvc.Services;
+using OllamaSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,9 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 //Servicio LLM
 builder.Services.AddScoped<LlmService>();
+//Integracion con Ollama
+//builder.Services.AddSingleton<IOllamaApiClient>(new OllamaApiClient(new Uri("http://localhost:11434"), "llama3.2"));
+//builder.Services.AddSingleton<OllamaLlmServices>();
 
 
 
